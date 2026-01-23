@@ -6,12 +6,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import api_view
 from .permissions import TienesPermisoHola
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import AllowAny
 class calcula(APIView):
-    
-    def has_permissions(self):
+    authentication_classes = [JWTAuthentication]
+    def get_permissions(self):
+       
         if self.request.method == "GET":
-            pass
-    
+            return [AllowAny()]
+        
+        return [IsAuthenticated()]
     
     
     
