@@ -77,3 +77,13 @@ class Language(models.Model):
     def __str__(self):
         return self.lengua
 
+
+
+
+class lector(models.Model):
+    nombre = models.CharField(max_length=100)
+    apellidos = models.CharField(max_length = 100)
+    localidad = models.CharField(max_length =100)
+    pronvincia = models.CharField(max_length = 100)
+    fecha_nacimineto = models.DateField()
+    

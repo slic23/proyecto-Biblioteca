@@ -8,6 +8,8 @@ from rest_framework.decorators import api_view
 from .permissions import TienesPermisoHola
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
+from catalog.models import *
+from  .  import serializers
 class calcula(APIView):
     authentication_classes = [JWTAuthentication]
     def get_permissions(self):
@@ -42,3 +44,10 @@ def holaMundo(request):
 
 
 
+class lecturaLibros(APIView):
+    def get(self, request):
+        libro = Book.objects.all()
+        serializer = serializers.libros(libro, many=True)
+        return Response(serializer.data)
+
+        

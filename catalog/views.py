@@ -34,3 +34,6 @@ class ListaPrestados(generic.ListView):
     model = BookInstance 
     def get_queryset(self):
         return super().get_queryset().filter(status__exact = "o")
+
+
+
