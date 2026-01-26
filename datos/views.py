@@ -50,4 +50,14 @@ class lecturaLibros(APIView):
         serializer = serializers.libros(libro, many=True)
         return Response(serializer.data)
 
+
+
+    def post(self,request):
+        pass
+
+
+
+class libro(APIView):
+    def get(self,request) :
+        
         

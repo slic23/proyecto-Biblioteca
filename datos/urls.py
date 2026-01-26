@@ -6,7 +6,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 urlpatterns = [path("calcula/", views.calcula.as_view()),
                path("hola/", views.holaMundo),
                path("login/", TokenObtainPairView.as_view() ), 
-               path("todosLibros/", views.lecturaLibros.as_view())]
+               path("todosLibros/", views.lecturaLibros.as_view()), 
+               path("libro/<int:pk>")]
 
 
 

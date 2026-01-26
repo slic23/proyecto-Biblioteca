@@ -12,6 +12,12 @@ class libros(serializers.ModelSerializer):
 class LibroBasico(serializers.ModelSerializer):
 	class Meta:
 		model = libro
+		fields = "__all__"
+
+
+
+
+
 
 
 
