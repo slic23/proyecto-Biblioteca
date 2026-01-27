@@ -9,6 +9,8 @@ from .permissions import TienesPermisoHola
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from catalog.models import *
+
+from .models import * 
 from  .  import serializers
 class calcula(APIView):
     authentication_classes = [JWTAuthentication]
@@ -57,7 +59,20 @@ class lecturaLibros(APIView):
 
 
 
-class libro(APIView):
-    def get(self,request) :
+class libros(APIView):
+
+    def get(self,request, pk = None) :
+        if pk: 
+            libroB = libro.objects.get(pk=pk)
+            serializer = serializers.LibroBasico(libroB)
+            return Response(serializer.data)
+
+        else: 
+            libros = libro.objects.all()
+            serializer = serializers.LibroBasico(libros, many = True)
+            return Response(serializer.data)
+
+
+
         
         
