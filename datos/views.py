@@ -9,6 +9,7 @@ from .permissions import TienesPermisoHola
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from catalog.models import *
+from rest_framework import generics
 
 from .models import * 
 from  .  import serializers
@@ -74,5 +75,8 @@ class libros(APIView):
 
 
 
+class listarLibros(generics.ListCreateAPIView):
+    queryset = libro.objects.all()
+    serializer_class = serializers.libros
         
         
