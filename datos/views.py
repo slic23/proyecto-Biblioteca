@@ -77,6 +77,11 @@ class libros(APIView):
 
 class listarLibros(generics.ListCreateAPIView):
     queryset = libro.objects.all()
+    
     serializer_class = serializers.libros
+    
+    parametro = self.request.query_params.get("titulo")
         
-        
+class tresAcciones(generics.RetrieveUpdateDestroyAPIView):
+    queryset = libro.objects.all()
+    serializer_class = serializers.libros

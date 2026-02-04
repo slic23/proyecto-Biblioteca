@@ -14,6 +14,7 @@ class LibroBasico(serializers.ModelSerializer):
 		model = libro
 		fields = "__all__"
 		
+		
 
 
 
