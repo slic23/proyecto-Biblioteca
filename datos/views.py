@@ -76,12 +76,29 @@ class libros(APIView):
 
 
 class listarLibros(generics.ListCreateAPIView):
-    queryset = libro.objects.all()
     
-    serializer_class = serializers.libros
-    
-    parametro = self.request.query_params.get("titulo")
+    serializer_class = serializers.LibroBasico
+
+    def get_queryset(self):
+        queryset = libro.objects.all()
+        titulo = self.request.query_params.get("titulo")
+
+        if titulo:
+            queryset = queryset.filter(titulo__icontains=titulo)
+
+        return queryset
+
         
 class tresAcciones(generics.RetrieveUpdateDestroyAPIView):
     queryset = libro.objects.all()
-    serializer_class = serializers.libros
+    serializer_class = serializers.LibroBasico
+    
+    
+    
+class AutorLecturaCreacion(generics.ListCreateAPIView):
+    pass 
+
+
+
+class AutoresCRUD(generics.RetrieveUpdateDestroyAPIView):
+    pass 

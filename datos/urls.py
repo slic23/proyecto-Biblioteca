@@ -8,7 +8,9 @@ urlpatterns = [path("calcula/", views.calcula.as_view()),
                path("login/", TokenObtainPairView.as_view() ), 
                path("todosLibros/", views.lecturaLibros.as_view()), 
                path("libros/<int:pk>", views.libros.as_view()), 
-               path("libros/", views.libros.as_view())]
+               path("libros/", views.libros.as_view()), 
+               path("libross/<int:pk>", views.tresAcciones.as_view()), 
+               path("libross/", views.listarLibros.as_view())]
 
 
 
