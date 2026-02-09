@@ -10,6 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from catalog.models import *
 from rest_framework import generics
+from rest_framework import viewsets
 
 from .models import * 
 from  .  import serializers
@@ -102,3 +103,8 @@ class AutorLecturaCreacion(generics.ListCreateAPIView):
 
 class AutoresCRUD(generics.RetrieveUpdateDestroyAPIView):
     pass 
+
+
+class EjemplosViewset(viewsets.ModelViewSet):
+    queryset = libro.objects.all()
+    serializer_class = serializers.LibroBasico
