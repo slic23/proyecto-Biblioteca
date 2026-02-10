@@ -16,7 +16,12 @@ urlpatterns = [path("calcula/", views.calcula.as_view()),
                path("libross/", views.listarLibros.as_view()), 
                path("ejemplo/",views.ejemplo2),
                path("", include(router.urls)), 
-               path("sumar/", views.sumar)
+               path("sumar/", views.sumar)  , 
+               path("secreto/", views.secreto), 
+               path("crudManual/<int:pk>/", views.lecturModifEliminacion), 
+               path("crudApi/", views.crudApi.as_view()), 
+               path("crudApi/<int:pk>/", views.crudApi.as_view())
+
                ]
                
 
