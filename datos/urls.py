@@ -20,8 +20,9 @@ urlpatterns = [path("calcula/", views.calcula.as_view()),
                path("secreto/", views.secreto), 
                path("crudManual/<int:pk>/", views.lecturModifEliminacion), 
                path("crudApi/", views.crudApi.as_view()), 
-               path("crudApi/<int:pk>/", views.crudApi.as_view())
-
+               path("crudApi/<int:pk>/", views.crudApi.as_view()), 
+               path("libritos/", views.listarCrear.as_view()), 
+               path("libritos/<int:pk>/", views.recuperarCambiarDestroy.as_view())
                ]
                
 

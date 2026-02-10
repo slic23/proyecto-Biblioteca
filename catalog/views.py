@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse 
 from django.views import generic 
-
+from .forms import lectorForm
 #Create your views here.
 from .models import *
 def index(request):
@@ -37,3 +37,14 @@ class ListaPrestados(generic.ListView):
 
 
 
+def registro(request):
+    if request.method == "POST":
+        form = lectorForm(request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+    else: 
+        form = lectorForm()
+        return render(request, "registro.html", {"form":form})
+    
+
+    

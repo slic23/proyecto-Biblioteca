@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.decorators import api_view
-from .permissions import TienesPermisoHola, EsStaff
+from .permissions import TienesPermisoHola, EsStaff  , EsAdulto
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import AllowAny
 from catalog.models import *
@@ -266,3 +266,32 @@ class crudApi(APIView):
         
             
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class listarCrear(generics.ListCreateAPIView):
+    serializer_class = serializers.Autores
+
+    def get_queryset(self):
+        dato = self.request.query_params.get("nombre")
+        queryset = Autor.objects.all()
+        if dato: 
+            queryset = Autor.objects.filter(nombre__icontains =dato)
+        return queryset
+    
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [EsAdulto()]
+
+        return [AllowAny()]        
+
+
+    
+class recuperarCambiarDestroy(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.Autores
+    queryset = Autor.objects.all()
+
+
+
+

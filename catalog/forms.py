@@ -1,5 +1,5 @@
 from django import forms
-
+from .models import *
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 import datetime #for checking renewal date range.
@@ -25,5 +25,15 @@ class RenewBookForm(forms.Form):
 class registro(forms.Model):
     class Meta:
         pass
+
+
+
+
+class lectorForm(forms.ModelForm):
+    class Meta:
+        model = lector
+        fields = "__all__"
+
+
 
 
