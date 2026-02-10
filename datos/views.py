@@ -46,14 +46,27 @@ def holaMundo(request):
                                request.data
                               })
 
+
+"""
+estoy probando aqui diferentes maneras de usar las 4 maneras de trabajar con apis
+con ejemplo sencillos hasta trabajar con bbdd, borrar elementos, crear, cambiar y eliminar 
+
+"""
+
+
 @api_view(["get","post"])
 def ejemplo2(request):
     if request.method =="GET":
+        dato = request.query_params.get("nombre", None)
+        if dato:
+            return Response({"mensaje":f"hola {dato} este es un mensaje"}, status = status.HTTP_200_OK)
         return Response({"mensaje": "Hola esto es una prueba"})
     
     elif request.method == "POST":
         return Response({"mensaje": "Estado recibido",
-                         "datos": request.data})
+    
+    
+                      "datos": request.data})
 
 class lecturaLibros(APIView):
     def get(self, request):
