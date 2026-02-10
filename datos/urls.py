@@ -14,9 +14,11 @@ urlpatterns = [path("calcula/", views.calcula.as_view()),
                path("libros/", views.libros.as_view()), 
                path("libross/<int:pk>", views.tresAcciones.as_view()), 
                path("libross/", views.listarLibros.as_view()), 
-               path("", include(router.urls))
+               path("ejemplo/",views.ejemplo2),
+               path("", include(router.urls)), 
+               path("sumar/", views.sumar)
                ]
-
+               
 
 
 

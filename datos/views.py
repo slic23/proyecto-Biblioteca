@@ -11,7 +11,8 @@ from rest_framework.permissions import AllowAny
 from catalog.models import *
 from rest_framework import generics
 from rest_framework import viewsets
-
+from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from .models import * 
 from  .  import serializers
 class calcula(APIView):
@@ -45,8 +46,14 @@ def holaMundo(request):
                                request.data
                               })
 
-
-
+@api_view(["get","post"])
+def ejemplo2(request):
+    if request.method =="GET":
+        return Response({"mensaje": "Hola esto es una prueba"})
+    
+    elif request.method == "POST":
+        return Response({"mensaje": "Estado recibido",
+                         "datos": request.data})
 
 class lecturaLibros(APIView):
     def get(self, request):
@@ -60,7 +67,29 @@ class lecturaLibros(APIView):
         pass
 
 
-
+@api_view(["get","post"])
+def sumar(request):
+    if request.method == "GET":
+        return Response({"a": 1, 
+                         "b": 2}, status = status.HTTP_200_OK )
+        
+        
+    elif request.method == "POST":
+        a = request.data.get("a")
+        b = request.data.get("b")  
+        try: 
+           a =  float(a)
+           b = float(b)
+            
+            
+        except (TypeError , ValueError):
+            return Response({"error": "deben ser numeros"}, status=status.HTTP_400_BAD_REQUEST)
+             
+            
+        
+        
+        return Response({"resultado": a + b  }  , status = status.HTTP_200_OK)
+        
 class libros(APIView):
 
     def get(self,request, pk = None) :
