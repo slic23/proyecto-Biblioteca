@@ -1,0 +1,10 @@
+{%extends "base_generic.html"%}
+{%block content%}
+<form action="" method="post">
+ {%csrf_token%}
+ {{form.as_p}}
+ <input type="submit"  name= "prestar" value="prestar">
+ <input type="submit" name="reservar" value="reservar" >
+ <input type="submit" name="mantenimiento" value="mantenimiento">
+</form>
+{%endblock%}

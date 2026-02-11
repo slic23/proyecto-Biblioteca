@@ -49,10 +49,13 @@ class BookInstance(models.Model):
             ("r","reserverd")
 
         )
+    pdf = models.FileField(upload_to="pdfs/", null=True)
+    video = models.FileField(upload_to="videos/", null=True)
     book = models.ForeignKey(Book,on_delete = models.SET_NULL, null = True)
     lenguaje = models.ForeignKey("Language", on_delete = models.SET_NULL , null = True)
     status = models.CharField(max_length = 1, choices = loan_status, blank = True, default = "m",help_text = "Disponibilidad d del ejemplar")
     lector = models.ForeignKey("lector", on_delete= models.SET_NULL, null=True )
+    portada = models.ImageField(upload_to="portadas/", null=True)
     class Meta: 
         ordering = ["due_back"]
     def __str__(self):

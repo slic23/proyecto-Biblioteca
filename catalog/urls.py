@@ -7,7 +7,15 @@ urlpatterns = [path('',views.index, name="index"),
                path("Autores/<int:pk>",views.DetalleAutor.as_view(),name = "detalle-autor"),
                path("listaprestados/",views.ListaPrestados.as_view(),name = "prestados"), 
                path("registro/", views.registro, name="registro"), 
-               path("registro2/", views.registro2, name = "registro2")]
+               path("registro2/", views.registro2, name = "registro2"), 
+               path("registroEditar/", views.editarCrear, name="editarCrear"), 
+               path("registroEditar/<int:pk>/", views.editarCrear, name="editarCrear"), 
+               path("ejemplaresDisponibles/",views.EjemplaresDisponibles.as_view(), name="ejemplaresDisp"), 
+               path("prestar/<uuid:pk>/", views.prestarEjemplar, name ="prestar"), 
+               path("ejemplar/<uuid:pk>/", views.detalleEjemplar.as_view(), name="ejemplarDetalle")]
+
+
+
 
 
 

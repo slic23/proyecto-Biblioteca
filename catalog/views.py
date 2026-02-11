@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect , get_object_or_404
 from django.http import HttpResponse 
 from django.views import generic 
-from .forms import LectorForm, FormularioRegistro
+from .forms import LectorForm, FormularioRegistro, AvanzadoModel, PrestamoForm
+import datetime
 
 #Create your views here.
 from .models import *
@@ -21,6 +22,7 @@ def index(request):
     return render(request,"index.html", context)
 class ListaLibros(generic.ListView):
     model = Book
+
 
 
 class ListaAutores(generic.ListView):
@@ -89,13 +91,92 @@ def registro2(request):
 
 def editarCrear(request, pk= None):
     if pk: 
-        lectorobjeto = lector.objects.get(pk=pk)
+        lectorObjeto = lector.objects.get(pk=pk)
 
 
 
     else:
-        pass 
+        lectorObjeto = None
+
+
+
+    if request.method == "POST":
+        form = AvanzadoModel(request.POST, instance=lectorObjeto)
+        if form.is_valid():
+            objeto = form.save(commit=False)
+            if  lectorObjeto is None: 
+            
+                contras = form.cleaned_data.get("password2")
+                usuarioSystem = User.objects.create_user(
+                    username=objeto.nombre,
+                    password=contras
+                )
+                objeto.usuario = usuarioSystem
+            objeto.save()
+            return redirect("index")
         
+
+    else:
+        form = AvanzadoModel(instance=lectorObjeto, initial={"aceptarTerminos": True})
+
+
+
+    return render(request, "registro.html", {"form":form})
+
+
+
+def prestarEjemplar(request, pk):
+    objeto = get_object_or_404(BookInstance , pk= pk)
+    if request.method == "POST":
+        form =  PrestamoForm(request.POST, instance=objeto)
+
+        if form.is_valid():
+
+            guardado = form.save(commit=False)
+
+            if "reservar" in request.POST:
+
+
+                guardado.status = "r"
+            elif "prestar" in request.POST:
+                guardado.status = "b"
+
+            elif "mantenimiento" in request.POST:
+                guardado.status = "m"
+
+
+            guardado.save()
+
+            return redirect("prestados")
+
+    else:
+        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        form = PrestamoForm(instance=objeto, initial={"due_back": proposed_renewal_date} )
+
+    return render(request, "prestamo.html", {"form": form})
+
+
+
+class EjemplaresDisponibles(generic.ListView):
+    model = BookInstance
+    template_name = "catalog/ejemplaresDisponibles.html"
+    def get_queryset(self):
+        return super().get_queryset().filter(status__exact = "a")
+    
+
+
+
+
+class detalleEjemplar(generic.DetailView):
+    model = BookInstance
+    
+
+
+
+
+
+
+
         
 
 

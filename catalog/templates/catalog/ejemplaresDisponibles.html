@@ -2,12 +2,12 @@
 {%block content%}
 
 {%if object_list%}
-<h1> Libros prestados </h1>
+<h1> Libros Disponibles </h1>
 
 <ul> 
  {%for i in object_list %}
- <li> <a href="{% url 'ejemplarDetalle' i.pk%}">{{i}}</li>
-
+ 
+<li><a href="{% url 'prestar' i.pk %}">{{ i }} </a></li>
  {%endfor%}
 
 </ul>

@@ -1,0 +1,44 @@
+{% extends "base_generic.html" %}
+
+
+
+
+{%block content%}
+
+
+<h1>Detalle de Ejemplar</h1>
+<p><strong>ID:</strong> {{ object.id }}</p>
+<p><strong>Libro:</strong> {{ object.book.title }}</p>
+<p><strong>Impresión:</strong> {{ object.imprint }}</p>
+<p><strong>Estado:</strong> {{ object.status }}</p>
+<p><strong>Fecha de vencimiento:</strong> {{ object.due_back }}</p>
+<p><strong>Lector:</strong> {{ object.borrower }}</p>
+<p><strong>Portada:</strong>
+    {% if object.portada %}
+    <img src="{{ object.portada.url }}" alt="Portada" style="max-width: 300px;">
+    {% else %}
+    <span>No disponible</span>
+    {% endif %}
+</p>
+
+
+<p><strong>PDF:</strong>
+    {% if object.pdf %}
+    <embed src="{{ object.pdf.url }}" width="100%" height="600px" type="application/pdf">
+    {% else %}
+    <span>No disponible</span>
+    {% endif %}
+</p>
+
+
+<p><strong>Video:</strong>
+    {% if object.video %}
+    <video width="100%" height="600px" controls>
+        <source src="{{ object.video.url }}" type="video/mp4">
+        Tu navegador no soporta la visualización de videos.
+    </video>
+    {% else %}
+    <span>No disponible</span>
+    {% endif %}
+</p>
+{%endblock%}

@@ -29,7 +29,7 @@ class BookInstanceAdmin(admin.ModelAdmin):
     list_display = ("book","status","due_back")
     list_filter  = ("status","due_back")
     fieldsets = (
-            (None, {"fields":("book","imprent","id")}),
+            (None, {"fields":("book","imprent","id", "portada", "pdf", "video")}),
             ("Availability",{"fields":("status","due_back")}),
                 )
 

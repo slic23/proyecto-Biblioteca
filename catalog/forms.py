@@ -72,17 +72,20 @@ class FormularioRegistro(forms.Form):
             raise ValidationError(_("Las contraseñas no coinciden"))
         return cleaned_data
         
+        
 
 
 class AvanzadoModel(forms.ModelForm):
-    aceptarTerminos= forms.BooleanField(required=True)
+    password1 = forms.CharField(max_length=100, widget= forms.PasswordInput)
+    password2 = forms.CharField(max_length=100 , widget=forms.PasswordInput)
+    aceptarTerminos= forms.BooleanField(required=True, label="Acepte terminos")
     class Meta:
         model = lector
         exclude = ["usuario"]
         widgets = {"nombre": forms.TextInput(attrs={"placeholder":"tu nombre"}), 
                    "apellidos": forms.TextInput(attrs= {"placeholder": "tus apellidos" }), 
                    " localidad": forms.TextInput(attrs={"placeholder":"introduce la localidad"}),
-                   "fecha_nacimineto": forms.TextInput(attrs={"placeholder": "introduce fecha de nacimiento"})}
+                   "fecha_nacimineto": forms.TextInput(attrs={"placeholder": "introduce fecha de nacimiento", "type":"date"})}
         
 
 
@@ -90,6 +93,10 @@ class AvanzadoModel(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         dato = cleaned_data.get("aceptarTerminos")
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+        if password1 != password2:
+            raise ValidationError(_("Las contraseñas no coinciden"))
         if not dato:
 
             self.add_error("Tienes que aceptar los terminos, si quieres continuar")
@@ -97,6 +104,24 @@ class AvanzadoModel(forms.ModelForm):
 
 
         return cleaned_data
+    
+
+
+
+
+class PrestamoForm(forms.ModelForm):
+    class Meta:
+        model = BookInstance
+        fields = ["book", "lector", "due_back"]
+        widgets = {"due_back": forms.DateInput(attrs={"type":"date"}),
+                   "lector":forms.Select(),
+                   "book":forms.Select() 
+                   }
+
+
+
+
+
 
 
 

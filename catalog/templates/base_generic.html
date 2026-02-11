@@ -23,9 +23,22 @@
       {% block sidebar %}
       <ul class="sidebar-nav">
           <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="{%url "listabooks" %}">All books</a></li>
-          <li><a href="{% url "listaauthors" %}">All authors</a></li>
-          <li><a href="{% url "prestados" %}">libros prestados</a></li>
+          <li><a href="{%url 'listabooks' %}">All books</a></li>
+          <li><a href="{% url 'listaauthors' %}">All authors</a></li>
+          <li><a href="{% url 'prestados'%}">libros prestados</a></li>
+          <li><a href="{% url 'ejemplaresDisp'%}">Ejemplares Disponibles</a></li>
+          {%if user.is_authenticated%}
+
+          <li>Usuario: {{user.get_username}}</li>
+          
+          <form action="{%url 'logout'%}" method="post">
+
+            {%csrf_token%}
+            <input type="submit" value="logout">
+          </form>
+          {%else%}
+          <li><a href="{%url 'login'%}?next={% url 'index'%}">Login</a></li>
+          {%endif%}
       </ul>
      {% endblock %}
       </div>
@@ -33,7 +46,6 @@
           {% block content %}{% endblock %}
       </div>
     </div>
-
   </div>
 </body>
 </html>
