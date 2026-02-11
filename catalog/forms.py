@@ -1,7 +1,7 @@
 from django import forms
 from .models import *
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import datetime #for checking renewal date range.
 
 class RenewBookForm(forms.Form):
@@ -22,17 +22,85 @@ class RenewBookForm(forms.Form):
         return data
 
 
-class registro(forms.Model):
-    class Meta:
-        pass
 
 
 
 
-class lectorForm(forms.ModelForm):
+class LectorForm(forms.ModelForm):
+    password1 = forms.CharField(max_length=100, widget= forms.PasswordInput)
+    password2 = forms.CharField(max_length=100 , widget=forms.PasswordInput)
+
     class Meta:
         model = lector
-        fields = "__all__"
+        exclude = ["usuario",]
+        widgets = {
+                "fecha_nacimineto": forms.DateInput(attrs={"type": "date"}),
+            }
+
+
+    def clean(self):
+        cleaned_data = super().clean() 
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1!= password2:
+            raise ValidationError(_("Las contraseñas no coinciden, vuelve a ponerlas"))
+        
+
+        return cleaned_data
+    
+
+
+
+
+class FormularioRegistro(forms.Form):
+    nombre = forms.CharField(max_length=100)
+    apellidos = forms.CharField(max_length = 100)
+    localidad = forms.CharField(max_length =100)
+    pronvincia = forms.CharField(max_length = 100)
+    fecha_nacimiento =forms.DateField(widget=forms.DateInput(attrs={"type":"date"}))
+    password1 = forms.CharField(max_length=100, widget=forms.PasswordInput)
+    password2 = forms.CharField(max_length=100, widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+
+        if password1 != password2:
+            raise ValidationError(_("Las contraseñas no coinciden"))
+        return cleaned_data
+        
+
+
+class AvanzadoModel(forms.ModelForm):
+    aceptarTerminos= forms.BooleanField(required=True)
+    class Meta:
+        model = lector
+        exclude = ["usuario"]
+        widgets = {"nombre": forms.TextInput(attrs={"placeholder":"tu nombre"}), 
+                   "apellidos": forms.TextInput(attrs= {"placeholder": "tus apellidos" }), 
+                   " localidad": forms.TextInput(attrs={"placeholder":"introduce la localidad"}),
+                   "fecha_nacimineto": forms.TextInput(attrs={"placeholder": "introduce fecha de nacimiento"})}
+        
+
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        dato = cleaned_data.get("aceptarTerminos")
+        if not dato:
+
+            self.add_error("Tienes que aceptar los terminos, si quieres continuar")
+
+
+
+        return cleaned_data
+
+
+
+                    
 
 
 

@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse 
 import uuid
+from django.contrib.auth.models import User
+
 # Create your models here.
 class Genre(models.Model):
     """
@@ -50,6 +52,7 @@ class BookInstance(models.Model):
     book = models.ForeignKey(Book,on_delete = models.SET_NULL, null = True)
     lenguaje = models.ForeignKey("Language", on_delete = models.SET_NULL , null = True)
     status = models.CharField(max_length = 1, choices = loan_status, blank = True, default = "m",help_text = "Disponibilidad d del ejemplar")
+    lector = models.ForeignKey("lector", on_delete= models.SET_NULL, null=True )
     class Meta: 
         ordering = ["due_back"]
     def __str__(self):
@@ -86,4 +89,4 @@ class lector(models.Model):
     localidad = models.CharField(max_length =100)
     pronvincia = models.CharField(max_length = 100)
     fecha_nacimineto = models.DateField()
-    
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True)    

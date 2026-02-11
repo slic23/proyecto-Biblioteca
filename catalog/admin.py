@@ -7,6 +7,7 @@ from django.contrib.auth.models import Permission
 #admin.site.register(Author)
 admin.site.register(Genre)
 admin.site.register(Language)
+admin.site.register(lector)
 @admin.register(Author)
 
 class AuthorAdmin(admin.ModelAdmin):
