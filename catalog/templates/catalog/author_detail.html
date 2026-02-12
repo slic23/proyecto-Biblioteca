@@ -1,7 +1,9 @@
 {% extends "base_generic.html"%}
 
-{% block content   %}
+{% block content %}
 
-<h1>{{object}}</h1>
+<h1>Autor: {{object.first_name}} {{object.last_name}}</h1>
+<p><strong>Fecha de nacimiento:</strong> {{object.date_of_birth}}</p>
+<p><strong>Fecha de fallecimiento:</strong> {{object.date_of_death}}</p>
 
 {%endblock %}

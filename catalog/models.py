@@ -3,6 +3,7 @@ from django.urls import reverse
 import uuid
 from django.contrib.auth.models import User
 
+
 # Create your models here.
 class Genre(models.Model):
     """
@@ -49,13 +50,19 @@ class BookInstance(models.Model):
             ("r","reserverd")
 
         )
-    pdf = models.FileField(upload_to="pdfs/", null=True)
-    video = models.FileField(upload_to="videos/", null=True)
+    pdf = models.FileField(upload_to="pdfs/", null=True, blank=True)
+    video = models.FileField(upload_to="videos/", null=True , blank = True)
     book = models.ForeignKey(Book,on_delete = models.SET_NULL, null = True)
     lenguaje = models.ForeignKey("Language", on_delete = models.SET_NULL , null = True)
     status = models.CharField(max_length = 1, choices = loan_status, blank = True, default = "m",help_text = "Disponibilidad d del ejemplar")
     lector = models.ForeignKey("lector", on_delete= models.SET_NULL, null=True )
-    portada = models.ImageField(upload_to="portadas/", null=True)
+    portada = models.ImageField(upload_to="portadas/", null=True , blank=True)
+    
+    reservadores = models.ManyToManyField(
+        "lector",
+        through='Reservation',
+        related_name='reservas'
+    )
     class Meta: 
         ordering = ["due_back"]
     def __str__(self):
@@ -71,7 +78,7 @@ class Author(models.Model):
     date_of_birth = models.DateField(null = True, blank = True)
     date_of_death = models.DateField("Died",null = True, blank =True)
 
-
+    
     def get_absolute_url(self):
         return  reverse("detalle-autor",args=[str(self.id)])
 
@@ -92,4 +99,36 @@ class lector(models.Model):
     localidad = models.CharField(max_length =100)
     pronvincia = models.CharField(max_length = 100)
     fecha_nacimineto = models.DateField()
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True)    
+    penalizado = models.BooleanField(null=True, default=False)
+    leidos = models.IntegerField(default=0)
+    
+    
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    def __str__(self):
+        return self.nombre  
+    class Meta:
+        permissions = (("can_mark_returned", "Set book as returned"),
+                       ("bibliotecario_poder","Permiso alto rango"), 
+                       ("carnet_lector", "permiso de lector"))
+        
+
+class Reservation(models.Model):
+    usuario_reservador = models.ForeignKey(lector, on_delete=models.CASCADE, related_name="lectores", related_query_name="lectoresquery")
+    book_instance = models.ForeignKey(BookInstance, on_delete=models.CASCADE, related_name= "ejemplares", related_query_name="ejemplaresquery")
+    fecha_reserva = models.DateField(auto_now_add=True)
+    estado = models.CharField(
+        max_length=20,
+        choices=[
+            ('pendiente','Pendiente'),
+            ('aprobada','Aprobada'),
+            ('rechazada','Rechazada'),
+        ],
+        default='pendiente'
+    )
+
+
+
+
+
+
+

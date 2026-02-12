@@ -29,8 +29,11 @@ class BookInstanceAdmin(admin.ModelAdmin):
     list_display = ("book","status","due_back")
     list_filter  = ("status","due_back")
     fieldsets = (
-            (None, {"fields":("book","imprent","id", "portada", "pdf", "video")}),
+            (None, {"fields":("book","imprent","id", "portada", "pdf", "video", "lector")}),
             ("Availability",{"fields":("status","due_back")}),
                 )
 
 admin.site.register(Permission)
+
+
+admin.site.register(Reservation)

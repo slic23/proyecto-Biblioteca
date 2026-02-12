@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
   {% block title %}<title>Local Library</title>{% endblock %}
@@ -20,32 +21,62 @@
 
     <div class="row">
       <div class="col-sm-2">
-      {% block sidebar %}
-      <ul class="sidebar-nav">
+        {% block sidebar %}
+        <ul class="sidebar-nav">
           <li><a href="{% url 'index' %}">Home</a></li>
           <li><a href="{%url 'listabooks' %}">All books</a></li>
           <li><a href="{% url 'listaauthors' %}">All authors</a></li>
-          <li><a href="{% url 'prestados'%}">libros prestados</a></li>
-          <li><a href="{% url 'ejemplaresDisp'%}">Ejemplares Disponibles</a></li>
+          <li><a href="{% url 'prestados'%}">Libros prestados (Mis Préstamos)</a></li>
+          <li><a href="{% url 'panelReservas'%}">Panel de reservas (Mis Reservas)</a></li>
+
+
           {%if user.is_authenticated%}
 
           <li>Usuario: {{user.get_username}}</li>
-          
+
+          {% if perms.catalog.bibliotecario_poder%}
+          <li><a href="{%url 'adminReservas'%}">Admin Reservas (Gestión)</a></li>
+          {%endif%}
+
+          <li><a href="{% url 'ejemplaresDisp'%}">Ejemplares Disponibles</a></li>
+          <li><a href="{% url 'registro2' %}">Registro (Práctica)</a></li>
+          <li><a href="{% url 'editarCrear' %}">Registro (Editar/Crear)</a></li>
+
           <form action="{%url 'logout'%}" method="post">
 
             {%csrf_token%}
             <input type="submit" value="logout">
           </form>
           {%else%}
+          <li><a href="{%url 'registro'%}">Registro</a></li>
           <li><a href="{%url 'login'%}?next={% url 'index'%}">Login</a></li>
           {%endif%}
-      </ul>
-     {% endblock %}
+        </ul>
+        {% endblock %}
       </div>
       <div class="col-sm-10 ">
-          {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+
+        {% block pagination %}
+        {% if is_paginated %}
+        <div class="pagination">
+          <span class="page-links">
+            {% if page_obj.has_previous %}
+            <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">anterior</a>
+            {% endif %}
+            <span class="page-current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+            {% if page_obj.has_next %}
+            <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">siguiente</a>
+            {% endif %}
+          </span>
+        </div>
+        {% endif %}
+        {% endblock %}
       </div>
     </div>
   </div>
 </body>
+
 </html>

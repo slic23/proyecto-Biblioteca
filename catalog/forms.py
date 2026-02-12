@@ -123,8 +123,6 @@ class PrestamoForm(forms.ModelForm):
 
 
 
-
-
                     
 
 

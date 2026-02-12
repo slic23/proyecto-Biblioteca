@@ -7,6 +7,13 @@
 <ul> 
  {%for i in object_list %}
  <li> <a href="{% url 'ejemplarDetalle' i.pk%}">{{i}}</li>
+    
+    <form action="{% url 'operacion' i.id %}" method="post">
+        {%csrf_token%}  
+        <input type="submit" name="devolver" value="Devolver">
+        <input type="submit" value="Ampliar plazo" name="ampliar">
+        
+    </form>
 
  {%endfor%}
 

@@ -1,0 +1,25 @@
+{%extends "base_generic.html"%}
+
+
+{%block content%}
+
+<h1>Panel control Bibliotecario Reservas</h1>
+{%if object_list%}
+{%for reserva in object_list%}
+
+<p>{{reserva.book_instance.book.title}}</p>
+<p>{{reserva.fecha_reserva}}</p>
+<p>{{reserva.estado}}</p>
+<form action="{%url 'control' reserva.pk %}" method="post">
+    {%csrf_token%}
+    <input type="submit" name="rechazar" value="rechazar">
+
+    <input type="submit" name="prestar" value="prestar">
+
+</form>
+{%endfor%}
+{%else%}
+<p>No hay reservas</p>
+
+{%endif%}
+{%endblock%}

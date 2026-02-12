@@ -12,7 +12,13 @@ urlpatterns = [path('',views.index, name="index"),
                path("registroEditar/<int:pk>/", views.editarCrear, name="editarCrear"), 
                path("ejemplaresDisponibles/",views.EjemplaresDisponibles.as_view(), name="ejemplaresDisp"), 
                path("prestar/<uuid:pk>/", views.prestarEjemplar, name ="prestar"), 
-               path("ejemplar/<uuid:pk>/", views.detalleEjemplar.as_view(), name="ejemplarDetalle")]
+               path("ejemplar/<uuid:pk>/", views.detalleEjemplar.as_view(), name="ejemplarDetalle"), 
+               path("gestionReserva/<uuid:pk>/", views.gestionReserva, name="gestionReserva"), 
+               path("panelReservas/", views.PanelReservas.as_view(), name="panelReservas"), 
+               path("ControlReservas/", views.PanelReservasAdmin.as_view(), name="adminReservas"), 
+               path("ControlFinal/<int:pk>/", views.controlReservas, name="control"), 
+               path('book/<uuid:pk>/renew/', views.renew_book_librarian, name='ampliarFecha'), 
+               path("operacion/<uuid:pk>/", views.operacion, name="operacion")]
 
 
 

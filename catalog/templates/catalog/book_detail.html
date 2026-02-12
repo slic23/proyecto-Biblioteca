@@ -6,7 +6,11 @@
 {%if object%}
 <h1>{{object.title}}</h1>
 
-<p class = "resumen">{{object.summary}}</p>
+<p class="resumen">{{object.summary}}</p>
+
+<p><strong>ISBN:</strong> {{object.isbn}}</p>
+<p><strong>Género:</strong> {{object.display_genre}}</p>
+<p><strong>Autor:</strong> <a href="{{object.author.get_absolute_url}}">{{object.author}}</a></p>
 
 {%endif%}
 {%endblock %}
