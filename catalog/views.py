@@ -304,65 +304,71 @@ Esta es funcion se encarga , de liberar los libros y ponerlos disponibles, y car
 
 
 """
-def  operacion(request, pk):
+@login_required
+@permission_required("catalog.bibliotecario_poder")
+def operacion(request, pk):
+    # Usamos select_related para optimizar la base de datos
     objeto = get_object_or_404(BookInstance, pk=pk)
 
-    if  "ampliar" in request.POST:
-      
-        return redirect("ampliarFecha", pk = objeto.id)
+    if "ampliar" in request.POST:
+        return redirect("ampliarFecha", pk=objeto.id)
 
+    elif "devolver" in request.POST:
+        # 1. Comprobamos si hay reservas pendientes (FIFO: First In, First Out)
+        reservas_activas = Reservation.objects.filter(
+            book_instance__book=objeto.book, # OJO: Buscamos reservas de la OBRA (Book), no solo de este ejemplar
+            estado="pendiente"
+        ).order_by("fecha_reserva")
+        
+        primera_reserva = reservas_activas.first()
 
-    elif "devolver" in request.POST: 
-        # devolucion cambiamos el estado primero 
-
-        objeto.status = "a"
-        # vemos quien esta en la cola, de reservas 
-        usuarios = Reservation.objects.filter(book_instance__pk = objeto.pk).order_by("fecha_reserva")
-        primera_reserva = usuarios.first()
-        if primera_reserva: 
-            objeto.lector = primera_reserva.usuario_reservador
-            objeto.status = "o"
-            objeto.due_back = datetime.date.now() + datetime.timedelta(weeks=3)
-            primera_reserva.estado = "Aprobada"
+        if primera_reserva:
+            # CASO A: Hay alguien esperando
+            # Asignamos este ejemplar físico a la reserva
+            primera_reserva.book_instance = objeto 
+            primera_reserva.estado = "aprobada" # O 'pendiente_recogida'
             primera_reserva.save()
-        else: 
-            objeto.lector = None
-            objeto.status = "a"
 
-        objeto.save() 
+            # El libro NO se presta aun, se RESERVA (se guarda en estantería)
+            objeto.status = "r" 
+            objeto.lector = None # Nadie lo tiene en casa aun
+            objeto.due_back = None # No hay fecha de devolución hasta que se lo lleven
+            
+            messages.info(request, f"Libro reservado para {primera_reserva.usuario_reservador.nombre}. ¡Guardar aparte!")
+
+        else:
+            # CASO B: Nadie espera, vuelve a la estantería general
+            objeto.status = "a"
+            objeto.lector = None
+            objeto.due_back = None
+            messages.success(request, "Libro devuelto y disponible.")
+
+        objeto.save()
         return redirect("prestados")
 
-
 def prestarEjemplar(request, pk):
-    """
-    esta funcion gestiona el prestamo fisico del ejemplar , si se lo lleva o se reserva o mantenimiento
-    """
-    objeto = get_object_or_404(BookInstance , pk= pk)
+    objeto = get_object_or_404(BookInstance, pk=pk)
+    
     if request.method == "POST":
-        form =  PrestamoForm(request.POST, instance=objeto)
-
+        form = PrestamoForm(request.POST, instance=objeto)
         if form.is_valid():
-
             guardado = form.save(commit=False)
 
             if "reservar" in request.POST:
-
-
-                guardado.status = "r"
+                guardado.status = "r" 
+            
             elif "prestar" in request.POST:
-                guardado.status = "b"
+                guardado.status = "o" # 
 
             elif "mantenimiento" in request.POST:
-                guardado.status = "m"
-
+                guardado.status = "m" 
 
             guardado.save()
-
             return redirect("prestados")
-
     else:
-        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
-        form = PrestamoForm(instance=objeto, initial={"due_back": proposed_renewal_date} )
+        
+        proposed_due_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        form = PrestamoForm(instance=objeto, initial={"due_back": proposed_due_date})
 
     return render(request, "prestamo.html", {"form": form})
 
