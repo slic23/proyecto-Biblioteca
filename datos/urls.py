@@ -3,7 +3,9 @@ from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
-router.register(r'librosSet', views.EjemplosViewset)
+router.register(r'librosSet', views.EjemplosViewset, 
+             )
+router.register( r"aprobando", views.aprobando ,  basename="aprobando" )
 
 
 urlpatterns = [path("calcula/", views.calcula.as_view()),

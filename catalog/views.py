@@ -365,3 +365,7 @@ def prestarEjemplar(request, pk):
         form = PrestamoForm(instance=objeto, initial={"due_back": proposed_renewal_date} )
 
     return render(request, "prestamo.html", {"form": form})
+
+
+
+

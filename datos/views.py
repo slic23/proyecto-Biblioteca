@@ -300,3 +300,153 @@ class recuperarCambiarDestroy(generics.RetrieveUpdateDestroyAPIView):
 def holaMundo(request):
     return Response({"mensaje": "hola mundo"}, status=status.HTTP_200_OK)
 
+
+
+
+
+
+
+
+class aprobando(viewsets.ModelViewSet):
+    queryset = libro.objects.all()
+    serializer_class = serializers.LibroBasico
+
+    def get_permissions(self):
+        """
+        Asigna permisos según la acción que se está ejecutando en el ViewSet.
+        self.action corresponde a: 'list', 'retrieve', 'create', 'update', 'partial_update', 'destroy'
+        """
+
+        # Listar y ver detalle → cualquiera puede ver
+        if self.action in ["list", "retrieve"]:
+            return [AllowAny()]
+
+        # Crear → solo usuarios autenticados
+        elif self.action == "create":
+            return [IsAuthenticated()]
+
+        # Actualizar completo o parcial → solo admins
+        elif self.action in ["update", "partial_update"]:
+            return [IsAdminUser()]
+
+        # Borrar → solo admins
+        elif self.action == "destroy":
+            return [IsAdminUser()]
+
+        # Si la acción no coincide con las anteriores, usar permisos por defecto del ViewSet
+        return super().get_permissions()
+    
+
+
+    def perform_create(self, serializer):
+        datos = serializer.validated_data
+
+        print(datos)
+
+        serializer.save()
+
+        
+
+
+################### APUNTES 
+
+
+
+# -----------------------------------------------------------------------------
+# EJEMPLOS DE CÓDIGO SIMPLIFICADO (LO QUE MÁS USARÁS)
+# -----------------------------------------------------------------------------
+
+# 1. FUNCIÓN SIMPLE (@api_view)
+# Lo más fácil: usas decoradores para método y permisos.
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated]) # Solo gente logueada
+def funcion_simple(request):
+    if request.method == 'GET':
+        libros = libro.objects.all()
+        serializer = serializers.LibroBasico(libros, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = serializers.LibroBasico(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 2. CLASE APIView (Más ordenado)
+# Separas la lógica en métodos (get, post, put...)
+class LibroAPIViewSimple(APIView):
+    permission_classes = [IsAdminUser] # Solo admins
+
+    def get(self, request):
+        # Lógica de listar
+        libros = libro.objects.filter(disponible=True) # Ejemplo: solo disponibles
+        serializer = serializers.LibroBasico(libros, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        # Lógica de crear
+        serializer = serializers.LibroBasico(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 3. GENERIC VIEW (Casi automático)
+# Le dices qué modelo y qué serializer, y él hace el trabajo sucio.
+class ListarCrearLibros(generics.ListCreateAPIView):
+    queryset = libro.objects.all()
+    serializer_class = serializers.LibroBasico
+    permission_classes = [IsAuthenticated] # O el que quieras
+
+
+# 4. VIEWSET SIMPLE (Todo automático)
+# CRUD completo en 3 líneas. Sin complicaciones.
+class LibroViewSetSimple(viewsets.ModelViewSet):
+    queryset = libro.objects.all()
+    serializer_class = serializers.LibroBasico
+    # Permisos simples:
+    permission_classes = [IsAuthenticated] 
+    
+    # Si quieres filtrar por usuario (muy común):
+    def get_queryset(self):
+        # Retorna solo los libros del usuario que hace la petición
+        return libro.objects.filter(autor__usuario=self.request.user)
+
+# 5. INTERCEPTANDO EL GUARDADO (perform_create, perform_update, perform_destroy)
+# Estos métodos sirven para meter lógica JUSTO ANTES de guardar en base de datos.
+# Funcionan IGUAL en GenericAPIView y en ModelViewSet.
+
+class LibroConLogicaGuardado(viewsets.ModelViewSet):
+    queryset = libro.objects.all()
+    serializer_class = serializers.LibroBasico
+    permission_classes = [IsAuthenticated]
+
+    # SE EJECUTA EN: POST (Crear)
+    def perform_create(self, serializer):
+        # El usuario no envía su ID en el JSON, se lo pegamos nosotros aquí automágicamente
+        # serializer.save() guarda el objeto, y le puedes pasar campos extra
+        print(f"Creando libro... Usuario: {self.request.user}")
+        serializer.save(autor__usuario=self.request.user) 
+
+    # SE EJECUTA EN: PUT y PATCH (Actualizar total o parcial)
+    def perform_update(self, serializer):
+        # Antes de guardar
+        print("Actualizando libro...")
+        
+        # Guardamos (esto devuelve la instancia ya actualizada)
+        instancia = serializer.save()
+        
+        # Después de guardar (ej: enviar correo si cambió el estado)
+        if instancia.disponible == False:
+            print(f"El libro {instancia.titulo} ya no está disponible.")
+
+    # SE EJECUTA EN: DELETE (Borrar)
+    def perform_destroy(self, instance):
+        # Aquí NO hay serializer, recibes el objeto (instance) directo
+        print(f"Borrando el libro {instance.titulo} para siempre...")
+        
+        # Ejecutas el borrado real (o podrías hacer un 'soft delete' cambiando un campo activo=False)
+        instance.delete()

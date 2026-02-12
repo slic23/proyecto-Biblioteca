@@ -128,3 +128,61 @@ class PrestamoForm(forms.ModelForm):
 
 
 
+# -----------------------------------------------------------------------------
+# EJEMPLO SOLICITADO: FORMS.FORM CON WIDGETS Y QUERYSETS (LO QUE NECESITAS)
+# -----------------------------------------------------------------------------
+
+class FormularioSimpleWidgets(forms.Form):
+    # 1. SELECT SIMPLE (DROPDOWN) DESDE BASE DE DATOS
+    # Carga todos los libros de la BD en un desplegable
+    libro_favorito = forms.ModelChoiceField(
+        queryset=Book.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Elige tu libro favorito",
+        empty_label="-- Selecciona un libro --"
+    )
+
+    # 2. CHECKBOXES MULTIPLES DESDE BASE DE DATOS
+    # Carga todos los autores, pero en lugar de lista, salen casillas para marcar varios
+    autores_preferidos = forms.ModelMultipleChoiceField(
+        queryset=Author.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        label="Marca tus autores preferidos"
+    )
+
+    # 3. RADIO BUTTONS (CIRCULITOS) CON OPCIONES FIJAS
+    # Opciones escritas a mano
+    TIPO_PORTADA = (
+        ('dura', 'Tapa Dura'),
+        ('blanda', 'Tapa Blanda'),
+        ('digital', 'Ebook'),
+    )
+    portada = forms.ChoiceField(
+        choices=TIPO_PORTADA,
+        widget=forms.RadioSelect, # <--- Esto lo convierte en bolitas
+        label="¿Qué formato prefieres?"
+    )
+
+    # 4. SELECT MULTIPLE (LISTA CON CTRL) DESDE BASE DE DATOS
+    # Igual que el punto 2, pero en lista nativa (incómodo de usar, mejor Checkbox)
+    generos = forms.ModelMultipleChoiceField(
+        queryset=Genre.objects.all(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control'}),
+        label="Selecciona géneros (usa Ctrl para varios)"
+    )
+
+
+
+"""
+
+class modelfORM(forms.Form):
+    atributo = forms.ModelChoiceField(queryset="", widget=forms.Select())
+
+
+    atribut2 = forms.ModelMultipleChoiceField(queryset= "", )
+
+
+
+
+"""
+
