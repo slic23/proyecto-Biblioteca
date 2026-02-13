@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect , get_object_or_404
-from django.http import HttpResponse 
-from django.views import generic 
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views import generic
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy, reverse 
 from .forms import LectorForm, FormularioRegistro, AvanzadoModel, PrestamoForm
 import datetime
 from django.contrib.auth.decorators import permission_required, login_required
@@ -375,3 +377,33 @@ def prestarEjemplar(request, pk):
 
 
 
+
+# -----------------------------------------------------------------------------
+#                           VISTAS DE EDICION DE AUTOR
+# -----------------------------------------------------------------------------
+
+class AuthorCreate(PermissionRequiredMixin, CreateView):
+    model = Author
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+    initial = {'date_of_death': '11/11/2023'}
+    permission_required = 'catalog.add_author'
+
+class AuthorUpdate(PermissionRequiredMixin, UpdateView):
+    model = Author
+    # Not recommended (potential security issue if more fields added)
+    fields = '__all__'
+    permission_required = 'catalog.change_author'
+
+class AuthorDelete(PermissionRequiredMixin, DeleteView):
+    model = Author
+    success_url = reverse_lazy('listaauthors')
+    permission_required = 'catalog.delete_author'
+
+    def form_valid(self, form):
+        try:
+            self.object.delete()
+            return HttpResponseRedirect(self.success_url)
+        except Exception as e:
+            return HttpResponseRedirect(
+                reverse("author-delete", kwargs={"pk": self.object.pk})
+            )

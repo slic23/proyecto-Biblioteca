@@ -181,10 +181,38 @@ class listarLibros(generics.ListCreateAPIView):
 
         return queryset
 
+    def perform_create(self, serializer):
+        """
+        Este método se ejecuta antes de guardar el nuevo objeto en la base de datos.
+        Aquí podrías modificar los datos o realizar acciones extra.
+        """
+        # Ejemplo: Imprimir un log o enviar un email
+        print(f"Creando un nuevo libro: {serializer.validated_data.get('titulo')}")
+        
+        # Guardamos el objeto. Si quisieras añadir datos automáticos (como el autor si fuera un usuario):
+        # serializer.save(autor=self.request.user) 
+        serializer.save()
+
         
 class tresAcciones(generics.RetrieveUpdateDestroyAPIView):
     queryset = libro.objects.all()
     serializer_class = serializers.LibroBasico
+    
+    def perform_update(self, serializer):
+        """
+        Se ejecuta al actualizar (PUT/PATCH).
+        """
+        instance = serializer.save()
+        print(f"Libro actualizado a: {instance.titulo}")
+
+    def perform_destroy(self, instance):
+        """
+        Se ejecuta al eliminar (DELETE).
+        Recibe la instancia (objeto) directamente, no el serializer.
+        """
+        print(f"Borrando libro: {instance.titulo}")
+        # Ejecutamos el borrado real
+        instance.delete()
     
     
     
@@ -338,12 +366,50 @@ class aprobando(viewsets.ModelViewSet):
     
 
 
+    # -------------------------------------------------------------------------
+    # MÉTODOS DE ACCIÓN EXPLÍCITOS (Para ver cómo funcionan por debajo)
+    # -------------------------------------------------------------------------
+
+    def list(self, request, *args, **kwargs):
+        """
+        Maneja GET (lista de objetos).
+        """
+        print("Listando libros desde el ViewSet...")
+        # Llamamos al comportamiento original de la clase padre (super)
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Maneja GET (un solo objeto por ID).
+        """
+        print(f"Recuperando libro con ID: {kwargs.get('pk')}")
+        return super().retrieve(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Maneja DELETE.
+        """
+        print("Intentando eliminar un libro...")
+        return super().destroy(request, *args, **kwargs)
+
+    # -------------------------------------------------------------------------
+    # HOOKS (Interceptores de guardado/borrado)
+    # -------------------------------------------------------------------------
+
     def perform_create(self, serializer):
-        datos = serializer.validated_data
-
-        print(datos)
-
+        # Se ejecuta en POST
+        print("Hook perform_create: Guardando nuevo libro...")
         serializer.save()
+
+    def perform_update(self, serializer):
+        # Se ejecuta en PUT / PATCH
+        print("Hook perform_update: Modificando libro...")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        # Se ejecuta en DELETE
+        print(f"Hook perform_destroy: Adiós libro {instance.titulo}...")
+        instance.delete()
 
         
 
